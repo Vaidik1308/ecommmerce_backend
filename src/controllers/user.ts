@@ -9,8 +9,9 @@ export const newUser  = TryCatch(
         req:Request<{},{},NewUserRequestBody>,
         res:Response,
         next:NextFunction
-    ) => {    
-        throw new Error("lag gye lode")
+    ) => 
+        {    
+        // throw new Error("lag gye lode")
             const {
                 name,
                 email,
@@ -19,8 +20,18 @@ export const newUser  = TryCatch(
                 dob,
                 _id
             } = req.body
-    
-            const user = await User.create({
+
+            if(!_id || !name || !email || !photo || !dob || !gender){
+                next(new ErrorHandler("Please add all fields",400))
+            }
+        let user = await User.findById(_id);
+        if(user){
+            return res.status(200).json({
+            success:true,
+            message:`Welcome, ${user.name}`,
+        })}
+
+        user = await User.create({
                 name,
                 email,
                 photo,
@@ -33,5 +44,40 @@ export const newUser  = TryCatch(
                 message:`Welcome, ${user.name}`
             })
         
+        
     }
 )
+
+export const getAllUsers = TryCatch(async (req,res,next) => {
+    // res.send("loda all users dunga tujhe ")
+    const users = await User.find({});
+
+    return res.status(201).json({
+        success:true,
+        users
+    })
+})
+
+export const getUser = TryCatch( async (req,res,next) => {
+    const _id = req.params.id
+    const user = await User.findById(_id)
+    if(!user){
+        return next(new ErrorHandler("Invalid user",400))
+    }
+     return res.status(200).json({
+        success:true,
+        user,
+    })
+}) 
+
+export const deleteUser = TryCatch(async (req,res,next) => {
+    const _id = req.params.id;
+    const user = await User.findByIdAndDelete(_id)
+    if(user){
+        return res.status(201).json({
+            success:true,
+            message:`${user.name} with ${user.id} deleted successfully`
+        })
+    }
+    return next(new ErrorHandler("unable to delete the user",500))
+})
