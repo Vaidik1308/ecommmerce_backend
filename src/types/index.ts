@@ -46,3 +46,9 @@ export type ProductType = {
    stock:number;
    photo:string;
 }
+
+export type InvalidateCacheProps = {
+   product?:boolean;
+   order?:boolean;
+   admin?:boolean;
+}
