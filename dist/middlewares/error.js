@@ -1,5 +1,5 @@
 export const errorMiddleware = (err, req, res, next) => {
-    err.message || (err.message = "Bhai lode yaha lage hai");
+    err.message || (err.message = "Bhai error yaha aya hai");
     err.statusCode || (err.statusCode = 500);
     return res.status(err.statusCode).json({
         success: false,
